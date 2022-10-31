@@ -50,12 +50,6 @@ jobs:
       with:
         name: app
 
-    - name: Create release
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: false
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -64,7 +58,6 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ${{ github.ref }}
-        allowUpdates: true
   
     - name: Upload Release APK
       id: upload_release_asset
