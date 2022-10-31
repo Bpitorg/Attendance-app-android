@@ -48,7 +48,7 @@ jobs:
     - name: Download APK from build
       uses: actions/download-artifact@v3.0.1
       with:
-        name: apk
+        name: app
 
     - name: Create release
       uses: "marvinpinto/action-automatic-releases@latest"
