@@ -1,5 +1,6 @@
 # to run this release add the tag before pushing
 # ex. git tag v0.1.1  
+# https://www.geeksforgeeks.org/automated-release-for-android-using-github-actions/
 
 # Name of the workflow
 name: Android Release
@@ -64,3 +65,11 @@ jobs:
         asset_path: app/app-debug.apk
         asset_name: app-debug.apk
         asset_content_type: application/zip
+
+    - name: Deploy Stage
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: ${{ secrets.VERSION_UPDATE_URL }}
+        method: 'PUT'
+        customHeaders: '{"Content-Type": "application/json"}'
+        data: ' { "platform": "android" ,"version": "${{ github.ref }}" }'
