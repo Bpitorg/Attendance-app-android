@@ -26,5 +26,5 @@ jobs:
       uses: actions/upload-artifact@v3.1.1
       with:
         name: app
-        path: app/builds/apks/bpit_attendance.apk
+        path: app/build/outputs/apk/debug/app-debug.apk
 
