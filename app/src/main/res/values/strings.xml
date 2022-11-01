@@ -65,6 +65,8 @@
     <string name="my_profile">My Profile</string>
     <string name="about">About</string>
     <string name="welcome">Welcome!</string>
+    <string name="update_version_api_url">https://bpit-att.herokuapp.com/api/version/check_updates?platform=android</string>
+    <string name="check_for_updates">Check for Updates</string>
     <string-array name="months_array">
         <item>January</item>
         <item>February</item>
