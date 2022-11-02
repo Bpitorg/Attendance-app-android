@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -69,7 +70,8 @@ class MainActivity : AppCompatActivity(), MyDrawerLocker {
         }
         navigationView.setNavigationItemSelectedListener {
             drawerLayout.closeDrawers()
-            val navController = Navigation.findNavController(this@MainActivity, R.id.fragmentContainerView)
+            val navController =
+                Navigation.findNavController(this@MainActivity, R.id.fragmentContainerView)
             when (it.itemId) {
                 R.id.my_profile -> {
                     val bundle = Bundle()
@@ -92,7 +94,7 @@ class MainActivity : AppCompatActivity(), MyDrawerLocker {
         }
         navigationView.findViewById<TextView>(R.id.logout).setOnClickListener {
             drawerLayout.closeDrawers()
-            logout()
+            logout(it)
         }
     }
 
@@ -120,7 +122,6 @@ class MainActivity : AppCompatActivity(), MyDrawerLocker {
                     val currentVersion = BuildConfig.VERSION_CODE
                     Log.d("debug", "$newVersion $currentVersion")
                     val apkURL = jsonObject?.getString("url")
-//                    val apkURL = "https://drive.google.com/file/d/17V91drruzIqBM1wnHgUGyFV5fss1qHEH/view?usp=sharing"
                     runOnUiThread {
                         if (newVersion!! > currentVersion) {
                             AlertDialog.Builder(this@MainActivity).apply {
@@ -129,10 +130,9 @@ class MainActivity : AppCompatActivity(), MyDrawerLocker {
                                 setPositiveButton("UPDATE") { _, _ ->
                                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(apkURL)))
                                 }
-                                setNegativeButton("NO, THANKS") {_, _ -> }
+                                setNegativeButton("NO, THANKS") { _, _ -> }
                             }.show()
-                        }
-                        else if (callID == 2) {
+                        } else if (callID == 2) {
                             AlertDialog.Builder(this@MainActivity).apply {
                                 setTitle("No Update Available!")
                                 setMessage("Version: ${BuildConfig.VERSION_NAME}\nContact developer for any bugs.")
@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity(), MyDrawerLocker {
 
     }
 
-    fun logout() {
+    private fun logout(view: View) {
         sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
         val token = sharedPreferences?.getString(SHARED_PREFERENCES_TOKEN_KEY, null)
         val url = getString(R.string.logout_api_url)
@@ -159,45 +159,22 @@ class MainActivity : AppCompatActivity(), MyDrawerLocker {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     runOnUiThread {
-                        Toast.makeText(this@MainActivity, "Log Out Failed", Toast.LENGTH_SHORT)
-                            .show()
+                        Snackbar.make(view, "Log Out Failed", Snackbar.LENGTH_SHORT).show()
                     }
                     Log.d("debug", "logout failed")
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-//                    if (response.isSuccessful) {
                     Log.d("debug", "logout successful")
                     deleteSharedPreferences(SHARED_PREFERENCES_NAME)
                     runOnUiThread {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Logout Successful",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Snackbar.make(view, "Logout Successful", Snackbar.LENGTH_SHORT).show()
                         val navController = Navigation.findNavController(
                             this@MainActivity,
                             R.id.fragmentContainerView
                         )
-                        when (navController.currentDestination?.id) {
-                            R.id.subjectListFragment -> {
-                                navController.navigate(R.id.action_subjectListFragment_to_loginFragment)
-                            }
-                            R.id.profileFragment -> {
-                                navController.navigate(R.id.action_profileFragment_to_loginFragment)
-                            }
-                        }
-
-//                        }
-
+                        navController.navigate(R.id.action_subjectListFragment_to_loginFragment)
                     }
-//                    else {
-//                        Log.d("debug", "logout failed ${response.body?.string()}")
-//                        runOnUiThread {
-//                            Toast.makeText(this@MainActivity, "Logout Failed", Toast.LENGTH_SHORT)
-//                                .show()
-//                        }
-//                    }
                     response.body?.close()
                 }
 
